@@ -83,6 +83,8 @@ public class PatientEditor2 extends AppCompatActivity {
     HashMap<CheckBox, CustomInputField> checkData = new HashMap<>();
     ArrayList<TextView> textViews = new ArrayList<>();
     ArrayList<CustomInputField> cifsInOrder = new ArrayList<>();
+    final StringBuilder currentFile = new StringBuilder();
+    final String defaultJSON = "[   {   \"type\":\"textbox\",   \"question\":\"My first question\",   \"data\":\"Hello World\",   \"options\":[   ],   \"choice\":0,   \"checked\":true   },   {   \"type\":\"dropdown\",   \"question\":\"My second question\",   \"data\":\"\",   \"options\":[   \"One\",   \"Two\",   \"Three\"   ],   \"choice\":1,   \"checked\":true   },   {   \"type\":\"checkbox\",   \"question\":\"My third question\",   \"data\":\"Hey\",   \"options\":[   \"One\",   \"Two\",   \"Three\"   ],   \"choice\":0,   \"checked\":true   }]";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)  {
@@ -101,15 +103,6 @@ public class PatientEditor2 extends AppCompatActivity {
 
             }
         });*/
-        try {
-            File f = new File("data1.json");
-            f.getCanonicalFile().delete();
-            f = new File("dat.json");
-            f.getCanonicalFile().delete();
-        }
-        catch (IOException e) {
-            Log.d("Benji", "IOError in renamer: " + e.getMessage());
-        }
 
         makeMenu("data1");
 
@@ -132,9 +125,8 @@ public class PatientEditor2 extends AppCompatActivity {
                 String json = gson.toJson(cifsInOrder);
                 Log.d("benji", "Saving: " + json);
 
-                String path = "data1";
                 try {
-                    FileOutputStream fos = openFileOutput(path, Context.MODE_PRIVATE);
+                    FileOutputStream fos = openFileOutput(currentFile.toString(), Context.MODE_PRIVATE);
                     fos.write(json.getBytes());
                     fos.close();
                 }
@@ -145,7 +137,7 @@ public class PatientEditor2 extends AppCompatActivity {
             @Override
             public boolean onLongClick(View view) {
                 Log.d("Benji", "Long");
-                final String json = "[{ \"type\": \"textbox\", \"question\": \"My first question\", \"data\": \"Hello World\", \"options\"=[], \"choice\"=0, \"checked\"=true}, { \"type\": \"dropdown\", \"question\": \"My second question\", \"data\": \"\", \"options\"=[\"One\", \"Two\", \"Three\"], \"choice\"=1, \"checked\"=true}, { \"type\": \"checkbox\", \"question\": \"My third question\", \"data\": \"Hey\", \"options\"=[\"One\", \"Two\", \"Three\"], \"choice\"=1, \"checked\"=true}]\n";
+                final String json = defaultJSON;
                 String path = "data1";
                 try {
                     FileOutputStream fos = openFileOutput(path, Context.MODE_PRIVATE);
@@ -310,7 +302,7 @@ public class PatientEditor2 extends AppCompatActivity {
         }
         catch (IOException e) {
             Log.d("Benji", "IO Exception in makeMenu: " + e.getMessage());
-            json = "[{ \"type\": \"textbox\", \"question\": \"My first question\", \"data\": \"Hello World\", \"options\"=[], \"choice\"=0, \"checked\"=true}, { \"type\": \"dropdown\", \"question\": \"My second question\", \"data\": \"\", \"options\"=[\"One\", \"Two\", \"Three\"], \"choice\"=1, \"checked\"=true}, { \"type\": \"checkbox\", \"question\": \"My third question\", \"data\": \"Hey\", \"options\"=[\"One\", \"Two\", \"Three\"], \"choice\"=1, \"checked\"=true}]";
+            json = defaultJSON;
         }
 
         Gson gson =  new Gson();
@@ -402,6 +394,16 @@ public class PatientEditor2 extends AppCompatActivity {
         sp.setVisibility(View.GONE);
         CheckBox cb = (CheckBox)findViewById(R.id.cB);
         cb.setVisibility(View.GONE);
+        files = getFilesDir().list();
+
+        for (String file : files) {
+            Log.d("Benji", file);
+        }
+
+        if (currentFile.length() != 0) {
+            currentFile.delete(0, currentFile.length() - 1);
+        }
+        currentFile.append(path);
         //Log.d("Benji", ctb[0].question + ctb[0].data + ctb[0].type + ctb[0].choice);
     }
 }
